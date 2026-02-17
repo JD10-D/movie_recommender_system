@@ -40,16 +40,6 @@ movies=pd.DataFrame(movies_dict)
 
 similarity=pickle.load(open('similarity.pkl','rb'))
 st.title("Movie Recommender System")
-if os.path.exists('similarity.pkl'):
-    with open('similarity.pkl','rb') as f:
-        similarity = pickle.load(f)
-else:
-    st.warning("similarity.pkl not found. Building it now… this may take a few seconds.")
-    tfidf = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = tfidf.fit_transform(movies['overview'])
-    similarity = cosine_similarity(tfidf_matrix, tfidf_matrix)
-    with open('similarity.pkl','wb') as f:
-        pickle.dump(similarity, f)
 
 selected_movie_name=st.selectbox(
     'Movies',
