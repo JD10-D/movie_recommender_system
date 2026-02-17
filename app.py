@@ -2,6 +2,10 @@ import streamlit as st
 import pickle 
 import pandas as pd
 import requests
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import os
+
 
 def get_poster(movie_id):
     api_key="6a491e8b83446b960a700cb83d9495f8"
@@ -36,7 +40,16 @@ movies=pd.DataFrame(movies_dict)
 
 similarity=pickle.load(open('similarity.pkl','rb'))
 st.title("Movie Recommender System")
-
+if os.path.exists('similarity.pkl'):
+    with open('similarity.pkl','rb') as f:
+        similarity = pickle.load(f)
+else:
+    st.warning("similarity.pkl not found. Building it now… this may take a few seconds.")
+    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(movies['overview'])
+    similarity = cosine_similarity(tfidf_matrix, tfidf_matrix)
+    with open('similarity.pkl','wb') as f:
+        pickle.dump(similarity, f)
 
 selected_movie_name=st.selectbox(
     'Movies',
